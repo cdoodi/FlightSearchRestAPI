@@ -63,14 +63,15 @@ public class ApiExceptionHandler {
 		return new ResponseEntity<ApiError>(apiError, HttpStatus.BAD_REQUEST);
 	}
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ErrorMessage> globalExceptionHandler(Exception ex, WebRequest request) {
-//      ErrorMessage message = new ErrorMessage(
-//          HttpStatus.INTERNAL_SERVER_ERROR.value(),
-//          new Date(),
-//          ex.getMessage(),
-//          request.getDescription(false));
-//      
-//      return new ResponseEntity<ErrorMessage>(message, HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> globalExceptionHandler(Exception ex, WebRequest request) {
+      ApiError message = new ApiError(
+          HttpStatus.INTERNAL_SERVER_ERROR.value(),
+          new Date(),
+          ex.getMessage(),
+          request.getDescription(false),
+          "Unexpected Error");
+      
+      return new ResponseEntity<ApiError>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

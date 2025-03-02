@@ -21,12 +21,11 @@ import org.springframework.web.context.request.WebRequest;
 import com.rest.example.demo.dao.FlightDto;
 import com.rest.example.demo.exception.NotSupportedFlightQueryException;
 import com.rest.example.demo.model.Flight;
-import com.rest.example.demo.service.AirportService;
 import com.rest.example.demo.service.FlightService;
 import com.rest.example.demo.util.AppUtil;
 
 @RestController
-@RequestMapping("/flights")
+@RequestMapping("/api/flights")
 public class FlightController {
 
 	Logger logger = LogManager.getLogger(FlightController.class);
