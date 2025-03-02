@@ -24,7 +24,7 @@ import com.rest.example.demo.service.AirportService;
 import com.rest.example.demo.util.AppUtil;
 
 @RestController
-@RequestMapping("/airports")
+@RequestMapping("/api/airports")
 @Validated
 public class AirportController {
 
