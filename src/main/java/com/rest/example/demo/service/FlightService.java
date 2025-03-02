@@ -16,15 +16,14 @@ import com.rest.example.demo.model.Flight;
 import com.rest.example.demo.model.FlightStatus;
 import com.rest.example.demo.repository.FlightRepository;
 import com.rest.example.demo.util.AppUtil;
-import com.rest.example.demo.util.SupportedQueryPattern;
-import com.rest.example.demo.web.AirportController;
+import static com.rest.example.demo.service.FlightSpecification.*;
 
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
 public class FlightService {
-	
+
 	Logger logger = LogManager.getLogger(FlightService.class);
 
 	private FlightRepository flightRepository;
@@ -38,6 +37,7 @@ public class FlightService {
 
 	/**
 	 * TODO further chance to improve using specification builder pattern
+	 * 
 	 * @param status
 	 * @param flightNumber
 	 * @param departure
@@ -58,39 +58,14 @@ public class FlightService {
 		if (arrival != null) {
 			arrivalAirport = airportService.getAirportByCode(arrival);
 		}
+		if (flexiTravel == null) {
 
-		SupportedQueryPattern supportedPattern = AppUtil.getQueryPattern(status, flightNumber, departure, arrival,
-				flexiTravel);
+			spec = hasStatus(status).and(hasFlightNumber(flightNumber)).and(hasArrivalAirport(arrivalAirport))
+					.and(hasDepartureAirport(departureAirport));
+		} else {
+			spec = hasStatus(status).and(hasFlightNumber(flightNumber))
+					.and((hasArrivalAirport(arrivalAirport)).or(hasDepartureAirport(departureAirport)));
 
-		switch (supportedPattern) {
-		case STATUS:
-			spec = Specification.where(FlightSpecification.hasStatus(status));
-			break;
-		case FLIGHTNUMBER:
-			spec = Specification.where(FlightSpecification.hasFlightNumber(flightNumber));
-			break;
-		case DEPARTURE_AND_ARRIVAL:
-			spec = Specification.where(FlightSpecification.hasDepartureAirport(departureAirport))
-					.and(FlightSpecification.hasArrivalAirport(arrivalAirport));
-			break;
-		case STATUS_AND_DEPARTURE_AND_ARRIVAL:
-			spec = Specification.where(FlightSpecification.hasStatus(status))
-					.and(FlightSpecification.hasDepartureAirport(departureAirport))
-					.and(FlightSpecification.hasArrivalAirport(arrivalAirport));
-			break;
-
-		case STATUS_AND_DEPARTURE_OR_ARRIVAL:
-			logger.info("Inside required query");
-			spec = Specification.where(FlightSpecification.hasStatus(status)).and(FlightSpecification
-					.hasDepartureAirport(departureAirport).or(FlightSpecification.hasArrivalAirport(arrivalAirport)));
-		case DEPARTURE :
-			  spec = Specification.where(FlightSpecification.hasDepartureAirport(departureAirport));
-			  break;
-		case ARRIVAL :
-			spec = Specification.where(FlightSpecification.hasArrivalAirport(arrivalAirport));
-			break;
-		default:
-			break;
 		}
 
 		List<Flight> flights = flightRepository.findAll(spec, Sort.by("duration").ascending());
@@ -199,6 +174,12 @@ public class FlightService {
 			flight.setStatus(FlightStatus.valueOf(flightDto.getStatus()));
 		}
 		return flight;
+	}
+
+	public FlightDto getFlightById(Long id) {
+
+		Flight flight = flightRepository.getReferenceById(id);
+		return convertToFlightDto(flight, new FlightDto());
 	}
 
 }

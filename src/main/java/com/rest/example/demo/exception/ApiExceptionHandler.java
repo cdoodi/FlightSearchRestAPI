@@ -25,7 +25,7 @@ public class ApiExceptionHandler {
 	public ResponseEntity<ApiError> handleInvalidFlightQuery(NotSupportedFlightQueryException ex, WebRequest request) {
 
 		ApiError apiError = new ApiError(HttpStatus.NOT_FOUND.value(), new Date(), ex.getLocalizedMessage(),
-				request.getDescription(false), "Flight not found");
+				request.getDescription(false), "Invalid flight query params");
 
 		return new ResponseEntity<ApiError>(apiError, HttpStatus.NOT_FOUND);
 	}
